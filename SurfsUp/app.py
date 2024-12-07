@@ -47,7 +47,7 @@ def home():
         f"/api/v1.0/temp/<start>/<end>"
     )
 
-
+ 
 # route to get a list of stations
 @app.route("/api/v1.0/stations")
 def stations():
