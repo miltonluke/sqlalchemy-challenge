@@ -44,7 +44,14 @@ def home():
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/tobs<br/>"
         f"/api/v1.0/temp/<start><br/>"
-        f"/api/v1.0/temp/<start>/<end>"
+        f"/api/v1.0/temp/<start>/<end><br/>"
+        f"<br/>"
+        f"For /api/v1.0/temp/ extension add a date as yyyy-mm-dd<br/>"
+        f"ex. /api/v1.0/temp/2017-07-01<br/>"
+        f"<br/>"
+        f"For /api/v1.0/temp// extension add start and end date as yyyy-mm-dd<br/>"
+        f"ex. /api/v1.0/temp/2017-07-01/2017-07-31<br/>"
+
     )
 
  
@@ -125,13 +132,26 @@ def temp_start(start):
 # route to get temperature data for a given start and end date
 @app.route("/api/v1.0/temp/<start>/<end>")
 def temp_start_end(start, end):
+
+    # Query for min, max, and avg temperature
     results = session.query(
         func.min(Measurement.tobs), 
         func.max(Measurement.tobs), 
         func.avg(Measurement.tobs)
     ).filter(Measurement.date >= start).filter(Measurement.date <= end).all()
 
-    return jsonify(results)
+    # Convert the results to a list of dictionaries
+    temp_data = []
+    for min_temp, max_temp, avg_temp in results:
+        temp_dict = {
+            "Minimum Temperature": min_temp,
+            "Maximum Temperature": max_temp,
+            "Average Temperature": avg_temp
+        }
+        temp_data.append(temp_dict)
+
+    # Return the results as JSON
+    return jsonify(temp_data)
 
 
 if __name__ == "__main__":
